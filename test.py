@@ -33,7 +33,7 @@ parser.add_argument("--experiment_id", type=int, default=1)
 #index1= {0=alex, 1=resnet}
 args = parser.parse_args() #args should be id
 args=str(args.experiment_id)
-
+Testing:)
 
 # Training parameters
 batch_size = 32  # orig paper trained all networks with batch_size=128
