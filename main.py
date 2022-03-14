@@ -21,9 +21,9 @@ results_dir = './experiments/'
 full_results_dir = results_dir + args.experiment_type + '/'
 
 if args.run == 'config':
-    if args.experiment_name == 'training':
+    if args.experiment_type == 'training':
         import trainID as run_exp
-    elif args.experiment_name == 'testing':
+    elif args.experiment_type == 'testing':
         import testID as run_exp
 
     run_exp.config_experiments(full_results_dir)
@@ -45,9 +45,9 @@ else:
 #         config_dataset = json.load(config_file)
 #     config["num_classes"] = config_dataset["num_classes"]  # This is going to be needed to define the architecture
 
-    if args.experiment_name == 'training':
-        import train as run
+    if args.experiment_type == 'training':
+        import runs.train as run
         run.train(config)
-    elif args.experiment_name == 'testing':
-        import test as run
+    elif args.experiment_type == 'testing':
+        import runs.test as run
         run.test(config)

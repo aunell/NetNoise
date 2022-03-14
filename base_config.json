@@ -1,6 +1,6 @@
 {
   "_comment": "===== MODEL CONFIGURATION =====",
-  "data": None
-  "net": None
-  "regimen": None
+  "data": "None",
+  "net": "None",
+  "regimen": "None"
 }

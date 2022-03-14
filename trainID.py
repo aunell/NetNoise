@@ -3,7 +3,7 @@ import os
 
 def config_experiments(results_dir, create_json=True):
 
-    with open('./base_config.json') as config_file:
+    with open('/Users/alyssaunell/PycharmProjects/NetNoise/NetNoise/base_config.json') as config_file:
         base_config = json.load(config_file)
 
     id = 0
@@ -12,7 +12,7 @@ def config_experiments(results_dir, create_json=True):
     for net in ["ResNet", "AlexNet"]:
         for train in regimen:
                 config = base_config.copy()
-                config["regimen"] = regimen
+                config["regimen"] = train
                 config["net"] = net
 
                 if create_json:
