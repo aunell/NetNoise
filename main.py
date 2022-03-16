@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+from NetNoise import runs
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--experiment_type", type=str, default="",
@@ -22,9 +23,9 @@ full_results_dir = results_dir + args.experiment_type + '/'
 
 if args.run == 'config':
     if args.experiment_type == 'training':
-        import trainID as run_exp
+        from NetNoise import trainID as run_exp
     elif args.experiment_type == 'testing':
-        import testID as run_exp
+        from NetNoise import testID as run_exp
 
     run_exp.config_experiments(full_results_dir)
     #     if args.config == 'generate':
@@ -46,8 +47,9 @@ else:
 #     config["num_classes"] = config_dataset["num_classes"]  # This is going to be needed to define the architecture
 
     if args.experiment_type == 'training':
-        import runs.train as run
+       # from NetNoise import runs as run
+        from NetNoise.runs import train as run
         run.train(config)
     elif args.experiment_type == 'testing':
-        import runs.test as run
+        from  NetNoise.runs import test as run
         run.test(config)
