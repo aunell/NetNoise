@@ -2,6 +2,7 @@
 # from __future__ import print_function
 
 import argparse
+import sys
 
 import tensorflow.keras as keras
 from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
@@ -374,7 +375,8 @@ def train(config):
 
     train_imagesClear = data[1][0]
     train_labelsClear = data[1][1]
-
+    print("start training")
+    sys.stdout.flush()
     if trainRes:
         if baseline:
             # baseline
