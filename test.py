@@ -1,32 +1,24 @@
 ##TESTING
-import argparse
 
-import tensorflow.keras as keras
-from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
-from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from tensorflow.keras.callbacks import ReduceLROnPlateau
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras import backend as K
-from tensorflow.keras.models import Model
-from tensorflow.keras.datasets import cifar10
-import numpy as np
 import os
-import matplotlib.pyplot as plt
+
 import cv2
-from skimage.color import rgb2gray, gray2rgb
-from tensorflow.keras import datasets, layers, models, backend, Model, callbacks
-#from keras.models import load_model
+# from keras.models import load_model
 import matplotlib.pyplot as plt
-import pickle
+import numpy as np
 import pandas as pd
-import random
-from skimage.util import random_noise
 import tensorflow as tf
-import seaborn as sns
-import train
+import tensorflow.keras as keras
+from skimage.color import rgb2gray, gray2rgb
+from tensorflow.keras import layers, Model
+from tensorflow.keras.callbacks import LearningRateScheduler
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
+from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
+
 
 def test(config):
     net = config['net']

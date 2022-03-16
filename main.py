@@ -1,16 +1,16 @@
-import os
-import json
 import argparse
-
+import json
+import os
+# os.chdir("/Users/alyssaunell/PycharmProjects/NetNoise/NetNoise")
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--experiment_type", type=str, default="",
-                            help="either 'training' or 'testing'")
+                    help="either 'training' or 'testing'")
 parser.add_argument("--experiment_id", type=int, default="0",
-                            help="id of json file")
+                    help="id of json file")
 parser.add_argument("--run", type=str, default="idle",
-                            help="run to perform on experiment <id>, either 'idle' or 'config'")
+                    help="run to perform on experiment <id>, either 'idle' or 'config'")
 parser.add_argument("--config", type=str, default="",
-                            help="config instruction")
+                    help="config instruction")
 
 args = parser.parse_args()
 print(args)
@@ -22,9 +22,9 @@ full_results_dir = results_dir + args.experiment_type + '/'
 
 if args.run == 'config':
     if args.experiment_type == 'training':
-        from NetNoise import trainID as run_exp
+        import NetNoise.trainID as run_exp
     elif args.experiment_type == 'testing':
-        from NetNoise import testID as run_exp
+         import NetNoise.testID as run_exp
 
     run_exp.config_experiments(full_results_dir)
     #     if args.config == 'generate':
@@ -38,17 +38,16 @@ else:
     with open(full_results_dir + 'configs/' + str(args.experiment_id) + '.json') as config_file:
         config = json.load(config_file)
 
-#     config['model_dir'] = full_results_dir + config['model_name']
-#     config['results_dir'] = results_dir
+    #     config['model_dir'] = full_results_dir + config['model_name']
+    #     config['results_dir'] = results_dir
 
-#     with open(results_dir + 'configs_datasets/' + str(config["data_set"]) + '.json') as config_file:
-#         config_dataset = json.load(config_file)
-#     config["num_classes"] = config_dataset["num_classes"]  # This is going to be needed to define the architecture
+    #     with open(results_dir + 'configs_datasets/' + str(config["data_set"]) + '.json') as config_file:
+    #         config_dataset = json.load(config_file)
+    #     config["num_classes"] = config_dataset["num_classes"]  # This is going to be needed to define the architecture
 
     if args.experiment_type == 'training':
-       # from NetNoise import runs as run
-        from NetNoise.runs import train as run
+        import train as run
         run.train(config)
     elif args.experiment_type == 'testing':
-        from  NetNoise.runs import test as run
+        import test as run
         run.test(config)

@@ -1,28 +1,21 @@
 #Baseline
 # from __future__ import print_function
 
-import argparse
+import os
 import sys
 
-import tensorflow.keras as keras
-from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
-from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from tensorflow.keras.callbacks import ReduceLROnPlateau
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras import backend as K
-from tensorflow.keras.models import Model
-from tensorflow.keras.datasets import cifar10
 import numpy as np
-import os
-import matplotlib.pyplot as plt
+import tensorflow.keras as keras
 from cv2 import cv2
 from skimage.color import rgb2gray, gray2rgb
-from tensorflow.keras import datasets, layers, models, backend, Model, callbacks
-
-import tensorflow as tf
+from tensorflow.keras import layers, models, Model
+from tensorflow.keras.callbacks import LearningRateScheduler
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
+from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
 
 
 def train(config):
@@ -360,10 +353,10 @@ def train(config):
         grayBlur = True
     if net=="AlexNet":
         trainAlex = True
-        path= '/Users/alyssaunell/PycharmProjects/NetNoise/NetNoise/models/AlexNet/'
+        path= '/NetNoise/models/AlexNet/'
     if net=="ResNet":
         trainRes = True
-        path = '/Users/alyssaunell/PycharmProjects/NetNoise/NetNoise/models/ResNet/'
+        path = '/NetNoise/models/ResNet/'
 
     data = testData('cifar10', imNoise=None, resnet=trainRes, cifarIndex=0)
 
