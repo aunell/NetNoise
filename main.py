@@ -1,7 +1,6 @@
 import os
 import json
 import argparse
-from NetNoise import runs
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--experiment_type", type=str, default="",
