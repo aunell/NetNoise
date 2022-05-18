@@ -4,7 +4,7 @@ import os
 # os.chdir("/Users/alyssaunell/PycharmProjects/NetNoise/NetNoise")
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--experiment_type", type=str, default="",
-                    help="either 'training' or 'testing'")
+                    help="either 'training' or 'testing' or 'activations' ")
 parser.add_argument("--experiment_id", type=int, default="0",
                     help="id of json file")
 parser.add_argument("--run", type=str, default="idle",
@@ -17,14 +17,16 @@ print(args)
 
 print("Experiment ID: " + str(args.experiment_id))
 
-results_dir = './experiments/'
+results_dir = '/om/user/aunell/NetNoise/experiments/'
 full_results_dir = results_dir + args.experiment_type + '/'
 
 if args.run == 'config':
     if args.experiment_type == 'training':
-        import NetNoise.trainID as run_exp
+        import trainID as run_exp
     elif args.experiment_type == 'testing':
-         import NetNoise.testID as run_exp
+        import testID as run_exp
+    elif args.experiment_type == 'activations':
+        import activateID as run_exp
 
     run_exp.config_experiments(full_results_dir)
     #     if args.config == 'generate':
@@ -51,3 +53,6 @@ else:
     elif args.experiment_type == 'testing':
         import test as run
         run.test(config)
+    elif args.experiment_type == 'activations':
+        import activations as run
+        run.activations(config)
