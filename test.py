@@ -18,6 +18,7 @@ from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
 from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Activation, GaussianNoise
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
+from NetNoise import train
 
 
 def test(config):
@@ -88,8 +89,6 @@ def test(config):
             image = gray2rgb(image)
             train_imagesClear[i] = image
         train_images = train_images / 255.0
-        # train_imagesClear=train_imagesClear/255.0
-        print('train shape', train_images.shape)
         if data == 'cifar10':
             test_images = test_images / 1.0
             if imNoise != None:
@@ -102,8 +101,8 @@ def test(config):
                     image = np.clip(image, 0, 255)
                     test_images[i] = image
         else:
-            dirs = list_files('/Users/alyssaunell/Desktop/Desktop/SuperUROP/CIFAR-10-C') #need to get Cifar10c on supercomp
-            test_labels = np.load('/Users/alyssaunell/Desktop/Desktop/SuperUROP/CIFAR-10-C/labels.npy')
+            dirs = list_files('/om/user/aunell/NetNoise/Cifar10C/CIFAR-10-C') #need to get Cifar10c on supercomp
+            test_labels = np.load('/om/user/aunell/NetNoise/Cifar10C/labels.npy')
             test_labels = np.array([test_labels])
             test_labels = test_labels.transpose()
             test_labels = test_labels[-10000:]
@@ -139,13 +138,10 @@ def test(config):
 
     def lr_schedule(epoch):
         """Learning Rate Schedule
-
         Learning rate is scheduled to be reduced after 80, 120, 160, 180 epochs.
         Called automatically every epoch as part of callbacks during training.
-
         # Arguments
             epoch (int): The number of epochs
-
         # Returns
             lr (float32): learning rate
         """
@@ -170,7 +166,6 @@ def test(config):
                      batch_normalization=True,
                      conv_first=True):
         """2D Convolution-Batch Normalization-Activation stack builder
-
         # Arguments
             inputs (tensor): input tensor from input image or previous layer
             num_filters (int): Conv2D number of filters
@@ -180,7 +175,6 @@ def test(config):
             batch_normalization (bool): whether to include batch normalization
             conv_first (bool): conv-bn-activation (True) or
                 bn-activation-conv (False)
-
         # Returns
             x (tensor): tensor as input to the next layer
         """
@@ -209,7 +203,6 @@ def test(config):
 
     def resnet_v2(input_shape, depth, num_classes=10, noise=False):
         """ResNet Version 2 Model builder [b]
-
         Stacks of (1 x 1)-(3 x 3)-(1 x 1) BN-ReLU-Conv2D or also known as
         bottleneck layer
         First shortcut connection per layer is 1 x 1 Conv2D.
@@ -223,12 +216,10 @@ def test(config):
         stage 0: 32x32,  64
         stage 1: 16x16, 128
         stage 2:  8x8,  256
-
         # Arguments
             input_shape (tensor): shape of input image tensor
             depth (int): number of core convolutional layers
             num_classes (int): number of classes (CIFAR10 has 10)
-
         # Returns
             model (Model): Keras model instance
         """
@@ -331,35 +322,30 @@ def test(config):
 
     parameters={}
 
-    pathsRes= ['/om/user/aunell/restruc/res/grayBlurNoise', '/om/user/aunell/restruc/res/bioMimetic', '/om/user/aunell/restruc/res/noise',
-              '/om/user/aunell/restruc/res/grayBlurColor','/om/user/aunell/restruc/res/grayBlurloc1', '/om/user/aunell/restruc/res/antiBio',
-              '/om/user/aunell/restruc/res/baseline']
+    pathsRes= ['/om/user/aunell/NetNoise/models/ResNet/grayBlurNoise', '/om/user/aunell/NetNoise/models/ResNet/bioMimetic', '/om/user/aunell/NetNoise/models/ResNet/noise',
+              '/om/user/aunell/NetNoise/models/ResNet/grayBlurColor','/om/user/aunell/NetNoise/models/ResNet/grayBlur', '/om/user/aunell/NetNoise/models/ResNet/antiBio',
+               '/om/user/aunell/NetNoise/models/ResNet/baseline']
 
 
-    pathsAlex=['/om/user/aunell/restruc/alex/grayBlurNoise', '/om/user/aunell/restruc/alex/bioMimetic', '/om/user/aunell/restruc/alex/noise',
-              '/om/user/aunell/restruc/alex/grayBlurColor','/om/user/aunell/restruc/alex/grayBlur', '/om/user/aunell/restruc/alex/antiBio',
-              '/om/user/aunell/restruc/alex/baseline']
+    pathsAlex=['/om/user/aunell/NetNoise/models/AlexNet/grayBlurNoise', '/om/user/aunell/NetNoise/models/AlexNet/bioMimetic', '/om/user/aunell/NetNoise/models/AlexNet/noise',
+              '/om/user/aunell/NetNoise/models/AlexNet/grayBlurColor','/om/user/aunell/NetNoise/models/AlexNet/grayBlur', '/om/user/aunell/NetNoise/models/AlexNet/antiBio',
+               '/om/user/aunell/NetNoise/models/AlexNet/baseline']
 
-
+    arch='none'
     if dataset == 'cifar10':
-        for n in range(0,10):
-            data= train.testData('cifar10', imNoise=n, resnet=resnet, cifarIndex=0)
+        for n in range(0,15):
+            data= testData('cifar10', imNoise=n, resnet=resnet, cifarIndex=0)
             test_images=data[2][0][2000:]
             test_labels=data[2][1][2000:]
             if resnet:
+                netName='resnet'
                 for p in range(len(pathsRes)):
-                        m= pathsRes[p][21:]
+                        m= pathsRes[p][39:]
                         model = tf.keras.models.load_model(pathsRes[p])
                         weights1=model.get_weights()
-                        fintest_trial=[]
-                        if p==0 or p==1:
-                            netNoise=0.1
-                        else:
-                            netNoise=0
-
                         del(model)
                         tf.compat.v1.reset_default_graph()
-                        if p==0 or p==1:
+                        if p==0 or p==1 or p==2:
                             model = resnet_v2(input_shape=input_shape, depth=depth, noise=True)
                         else:
                             model = resnet_v2(input_shape=input_shape, depth=depth, noise=False)
@@ -367,17 +353,15 @@ def test(config):
                                optimizer=Adam(lr=lr_schedule(0)),
                                metrics=['accuracy'])
                         model.set_weights(weights1)
-                        print(len(test_labels))
                         test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=0)
-                        print(m,  test_acc)
                         if m in parameters.keys():
                             parameters[m].append(test_acc)
                         else:
                             parameters[m]=[test_acc]
             else:
+                netName = 'alexnet'
                 for p in range(len(pathsAlex)):
-                        m= pathsAlex[p][23:]
-                        print(m)
+                        m= pathsAlex[p][40:]
                         model = tf.keras.models.load_model(pathsAlex[p])
                         weights1=model.get_weights()
                         if p==0 or p==1 or p==2:
@@ -413,39 +397,36 @@ def test(config):
                             parameters[m].append(test_acc)
                         else:
                             parameters[m]=[test_acc]
-        x=range(0,10)
+        x=range(0,15)
         key_list = list(parameters.keys())
         for i in key_list:
             plt.plot(x, parameters[i],label=i)
-        plt.title('Noise Robustness Alexnet-- Best Results With or Without Noise in Test')
+        plt.title(netName)
         plt.xlabel('Noise in Test Image (% of .1 STD)')
         plt.ylabel('Accuracy')
-        plt.legend(bbox_to_anchor=(1.05, 1))
-        plt.savefig('/om/user/aunell/data/Post-Activation/20TrainingConsistent/results/epoch_all.png')
+        plt.legend()
+        # plt.savefig('/om/user/aunell/NetNoise/results/'+netName+'.png')
+        plt.savefig('/om/user/aunell/NetNoise/results/' + netName + '.png')
         plt.show()
     else:
         results = pd.DataFrame(columns=['regime', 'trial', 'degredation', 'accuracy'])
-        for j in range(len(list_files('/om/user/aunell/Optimized/Cifar10C'))):
-            data=train.testData('cifar10c', imNoise=0, resnet=resnet, cifarIndex=j)
+        for j in range(len(list_files('/om/user/aunell/NetNoise/Cifar10C/CIFAR-10-C'))):
+            data=testData('cifar10c', imNoise=0, resnet=resnet, cifarIndex=j)
             test_images=data[2][0]
             test_labels=data[2][1]
             if resnet:
+                arch='resnet'
                 for p in range(len(pathsRes)):
-                        m= pathsRes[p][21:]
+                        m= pathsRes[p][39:]
                         model = tf.keras.models.load_model(pathsRes[p])
                         weights1=model.get_weights()
-                        fintest_trial=[]
-                        if p==0 or p==1:
-                            netNoise=0.1
-                        else:
-                            netNoise=0
 
                         del(model)
                         tf.compat.v1.reset_default_graph()
-                        if p==0 or p==1:
+                        if p==0 or p==1 or p==2:
                             model = resnet_v2(input_shape=input_shape, depth=depth, noise=True)
                         else:
-                            model = resnet_v2(input_shape=input_shape, depth=depth, noise=False)
+                            model = resnet_v2(input_shape=input_shape, depth=depth, noise=True)
                         model.compile(loss='categorical_crossentropy',
                                optimizer=Adam(lr=lr_schedule(0)),
                                metrics=['accuracy'])
@@ -460,15 +441,15 @@ def test(config):
                         results=pd.concat([df2, results])
             else:
                 for p in range(len(pathsAlex)):
-                        m= pathsAlex[p][23:]
-                        print(m)
+                        m= pathsAlex[p][40:]
+                        arch='alexnet'
                         model = tf.keras.models.load_model(pathsAlex[p])
                         weights1=model.get_weights()
                         fintest_trial=[]
                         if p==0 or p==1 or p==2:
                             netNoise=0.1
                         else:
-                            netNoise=0
+                            netNoise=0.1
 
                         del(model)
                         tf.compat.v1.reset_default_graph()
@@ -503,24 +484,25 @@ def test(config):
                         results=pd.concat([df2, results])
 
         improvementDict= {}
-        print(results)
+        df = pd.DataFrame.from_dict(results)
+        df.to_csv('/om/user/aunell/NetNoise/results/' + arch + 'cifar10c.csv', index=False, header=True)
         for deg in results['degredation']:
-            best=results.loc[(results['degredation']==deg) & (results['regime']!= 'uc/res/bioMimetic')]
+            print('RESULTS OF REGIME', results['regime'])
+            best=results.loc[(results['degredation']==deg) & (results['regime']!= 'bioMimetic')]
             bestAcc=best['accuracy'].max()
-            bio=results.loc[(results['degredation']==deg) & (results['regime']== 'uc/res/bioMimetic')]
+            bio=results.loc[(results['degredation']==deg) & (results['regime']== 'bioMimetic')]
             bioAcc=bio['accuracy'].max()
            # bestAccScore=bestAcc['accuracy']
             diff=(bioAcc-bestAcc)/bestAcc
             improvementDict[deg]=(bioAcc-bestAcc)/bestAcc
         # print(improvementDict)
         vals=list(improvementDict.values())
-        print('h', vals)
         # mylist = [key for key, val in improvementDict.items() for _ in range(val)]
         plt.figure(figsize=(10,10))
         plt.hist(vals, bins=[-.3,-.2,-.1,-.05,0, .05, .1, .15, .2, .25, .3, .35, .4, .45])
         plt.xlabel('% Bio-mimetic Improvement', fontsize=18)
         plt.ylabel('Regimes with Improvement', fontsize=18)
-        plt.title('REsNet Cifar-10-C Bio-mimetic Improvement Score', fontsize=20)
-        figName='/om/user/aunell/restruc/res-Cifar10cHIST.pdf'
+        plt.title(arch+' Cifar-10-C Bio-mimetic Improvement Score', fontsize=20)
+        figName='/om/user/aunell/NetNoise/results/'+arch+'10c.pdf'
         plt.savefig(figName, format='pdf')
         plt.show()
