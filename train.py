@@ -1,5 +1,4 @@
-#Baseline
-# from __future__ import print_function
+# Baseline
 
 import os
 import sys
@@ -20,7 +19,7 @@ from tensorflow.keras.regularizers import l2
 
 def train(config):
     net = config['net']
-    regimen=config['regimen']
+    regimen = config['regimen']
 
     # Training parameters
     batch_size = 32  # orig paper trained all networks with batch_size=128
@@ -57,7 +56,6 @@ def train(config):
     elif version == 2:
         depth = n * 9 + 2
 
-
     def list_files(dir):
         r = []
         for root, dirs, files in os.walk(dir):
@@ -65,10 +63,8 @@ def train(config):
                 r.append(os.path.join(root, name))
         return r
 
-
     # Model name, depth and version
     model_type = 'ResNet%dv%d' % (depth, version)
-
 
     def testData(data, imNoise=None, resnet=True, cifarIndex=0):
         (train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
@@ -76,6 +72,7 @@ def train(config):
         for i in range(len(train_images)):
             image = train_imagesClear[i]
             image = cv2.GaussianBlur(image, (3, 3), 0)
+            train_imagesClear[i]=image
         train_imagesClear = train_imagesClear / 255.0
         for i in range(len(train_imagesClear)):
             image = rgb2gray(train_imagesClear[i])
@@ -96,7 +93,8 @@ def train(config):
                     image = np.clip(image, 0, 255)
                     test_images[i] = image
         else:
-            dirs = list_files('/Users/alyssaunell/Desktop/Desktop/SuperUROP/CIFAR-10-C') #need to get Cifar10c on supercomp
+            dirs = list_files(
+                '/Users/alyssaunell/Desktop/Desktop/SuperUROP/CIFAR-10-C')  # need to get Cifar10c on supercomp
             test_labels = np.load('/Users/alyssaunell/Desktop/Desktop/SuperUROP/CIFAR-10-C/labels.npy')
             test_labels = np.array([test_labels])
             test_labels = test_labels.transpose()
@@ -118,28 +116,14 @@ def train(config):
 
                 train_imagesClearMean = np.mean(train_imagesClear, axis=0)
                 train_imagesClear -= train_imagesClearMean
-        # for i in range(3):
-        #     plt.subplot(5, 5, i + 1)
-        #     plt.xticks([])
-        #     plt.yticks([])
-        #     plt.grid(False)
-        #     plt.imshow(train_images[i + 5], cmap='gray')
-        #     # The CIFAR labels happen to be arrays,
-        #     # which is why you need the extra index
-        #     plt.xlabel('reg')
-        # plt.show()
         return [[train_images, train_labels], [train_imagesClear, train_labels], [test_images, test_labels]]
-
 
     def lr_schedule(epoch):
         """Learning Rate Schedule
-
         Learning rate is scheduled to be reduced after 80, 120, 160, 180 epochs.
         Called automatically every epoch as part of callbacks during training.
-
         # Arguments
             epoch (int): The number of epochs
-
         # Returns
             lr (float32): learning rate
         """
@@ -155,7 +139,6 @@ def train(config):
         print('Learning rate: ', lr)
         return lr
 
-
     def resnet_layer(inputs,
                      num_filters=16,
                      kernel_size=3,
@@ -164,7 +147,6 @@ def train(config):
                      batch_normalization=True,
                      conv_first=True):
         """2D Convolution-Batch Normalization-Activation stack builder
-
         # Arguments
             inputs (tensor): input tensor from input image or previous layer
             num_filters (int): Conv2D number of filters
@@ -174,7 +156,6 @@ def train(config):
             batch_normalization (bool): whether to include batch normalization
             conv_first (bool): conv-bn-activation (True) or
                 bn-activation-conv (False)
-
         # Returns
             x (tensor): tensor as input to the next layer
         """
@@ -200,10 +181,8 @@ def train(config):
             x = conv(x)
         return x
 
-
     def resnet_v2(input_shape, depth, num_classes=10, noise=False):
         """ResNet Version 2 Model builder [b]
-
         Stacks of (1 x 1)-(3 x 3)-(1 x 1) BN-ReLU-Conv2D or also known as
         bottleneck layer
         First shortcut connection per layer is 1 x 1 Conv2D.
@@ -217,12 +196,10 @@ def train(config):
         stage 0: 32x32,  64
         stage 1: 16x16, 128
         stage 2:  8x8,  256
-
         # Arguments
             input_shape (tensor): shape of input image tensor
             depth (int): number of core convolutional layers
             num_classes (int): number of classes (CIFAR10 has 10)
-
         # Returns
             model (Model): Keras model instance
         """
@@ -301,7 +278,6 @@ def train(config):
         model = Model(inputs=inputs, outputs=outputs)
         return model
 
-
     # Input image dimensions.
     # input_shape = testData('cifar10', imNoise=0, resnet=True, cifarIndex=0)[0]
     # print(len(input_shape))
@@ -334,29 +310,29 @@ def train(config):
     antiBio = False
     noise = False
     grayBlur = False
-    trainRes=False
-    trainAlex=False
+    trainRes = False
+    trainAlex = False
     import tensorflow as tf
-    if regimen=="baseline":
+    if regimen == "baseline":
         baseline = True
-    if regimen=="grayBlurColor":
+    if regimen == "grayBlurColor":
         grayBlurColor = True
-    if regimen=="grayBlurNoise":
+    if regimen == "grayBlurNoise":
         grayBlurNoise = True
-    if regimen=="bioMimetic":
+    if regimen == "bioMimetic":
         bioMimetic = True
-    if regimen=="antiBio":
+    if regimen == "antiBio":
         antiBio = True
-    if regimen=="noise":
+    if regimen == "noise":
         noise = True
-    if regimen=="grayBlur":
+    if regimen == "grayBlur":
         grayBlur = True
-    if net=="AlexNet":
+    if net == "AlexNet":
         trainAlex = True
-        path= '/NetNoise/models/AlexNet/'
-    if net=="ResNet":
+        path = '/om/user/aunell/NetNoise/models/AlexNet/'
+    if net == "ResNet":
         trainRes = True
-        path = '/NetNoise/models/ResNet/'
+        path = '/om/user/aunell//NetNoise/models/ResNet/'
 
     data = testData('cifar10', imNoise=None, resnet=trainRes, cifarIndex=0)
 
@@ -380,8 +356,8 @@ def train(config):
             history = model.fit(train_images, train_labels, batch_size=batch_size, epochs=epochs,
                                 validation_data=(validate_images, validate_labels), callbacks=callbacks)
             name = 'baseline'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if grayBlur or bioMimetic or grayBlurColor:
             modelGray = resnet_v2(input_shape=input_shape, depth=depth, noise=False)
             modelGray.compile(loss='categorical_crossentropy',
@@ -389,10 +365,10 @@ def train(config):
                               metrics=['accuracy'])
             history = modelGray.fit(train_imagesClear, train_labels, batch_size=batch_size, epochs=epochs,
                                     validation_data=(validate_images, validate_labels), callbacks=callbacks)
-            name = 'grayBlurloc1'
-            path = path = path + name
+            name = 'grayBlur'
+            pathNew = path = path + name
             if grayBlur:
-                modelGray.save(path)
+                modelGray.save(pathNew)
         if bioMimetic:
             weights = modelGray.get_weights()
             model = None
@@ -410,15 +386,13 @@ def train(config):
 
             print('ending biomodel')
             name = 'bioMimetic'
-            path = path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
             callbacks.pop()
 
         if grayBlurColor:
-            # model = tf.keras.models.load_model('/om/user/aunell/data/grayBlurloc1')
             weights = modelGray.get_weights()
             model = None
-            print('starting biomodel')
             model = resnet_v2(input_shape=input_shape, depth=depth, noise=False)
             model.compile(loss='categorical_crossentropy',
                           optimizer=Adam(lr=lr_schedule(0)),
@@ -429,11 +403,9 @@ def train(config):
             history = model.fit(train_images, train_labels, batch_size=batch_size,
                                 validation_data=(validate_images, validate_labels), epochs=100,
                                 callbacks=callbacks)
-
-            print('ending biomodel')
             name = 'grayBlurColor'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
             callbacks.pop()
         if grayBlurNoise:
             model = resnet_v2(input_shape=input_shape, depth=depth, noise=True)
@@ -443,8 +415,8 @@ def train(config):
             history = model.fit(train_imagesClear, train_labels, batch_size=batch_size, epochs=epochs,
                                 validation_data=(validate_images, validate_labels), callbacks=callbacks)
             name = 'grayBlurNoise'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if antiBio or noise:
             model = resnet_v2(input_shape=input_shape, depth=depth, noise=True)
             model.compile(loss='categorical_crossentropy',
@@ -453,9 +425,9 @@ def train(config):
             history = model.fit(train_images, train_labels, batch_size=batch_size, epochs=epochs,
                                 validation_data=(validate_images, validate_labels), callbacks=callbacks)
             name = 'noise'
-            path = path + name
+            pathNew = path + name
             if noise:
-                model.save(path)
+                model.save(pathNew)
             if antiBio:
                 weights = model.get_weights()
                 model = None
@@ -470,8 +442,8 @@ def train(config):
                                     validation_data=(validate_images, validate_labels), epochs=100,
                                     callbacks=callbacks)
                 name = 'antiBio'
-                path = path + name
-                model.save(path)
+                pathNew = path + name
+                model.save(pathNew)
     if trainAlex:
         trainNoise = .1
         if baseline:
@@ -507,8 +479,8 @@ def train(config):
                 history = model.fit(train_images, train_labels, epochs=3,
                                     validation_data=(validate_images, validate_labels))
             name = 'baseline'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if grayBlur or bioMimetic or grayBlurColor:
             for i in range(1, 4):
                 noise_dict = {1: 0, 2: 0, 3: 0}
@@ -543,8 +515,8 @@ def train(config):
                                     validation_data=(validate_images, validate_labels))
             if grayBlur:
                 name = 'grayBlur'
-                path = path + name
-                model.save(path)
+                pathNew = path + name
+                model.save(pathNew)
             modelGray = model
         if bioMimetic:
             weights0 = modelGray.get_weights()
@@ -577,8 +549,8 @@ def train(config):
                                 validation_data=(validate_images, validate_labels), epochs=50,
                                 callbacks=[callback])
             name = 'bioMimetic'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if grayBlurColor:
             weights0 = modelGray.get_weights()
             model = None
@@ -610,8 +582,8 @@ def train(config):
                                 validation_data=(validate_images, validate_labels), epochs=50,
                                 callbacks=[callback])
             name = 'grayBlurColor'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if grayBlurNoise:
             for i in range(1, 4):
                 noise_dict = {1: 0, 2: trainNoise, 3: 0}
@@ -645,8 +617,8 @@ def train(config):
                 history = model.fit(train_imagesClear, train_labels, epochs=3,
                                     validation_data=(validate_images, validate_labels))
             name = 'grayBlurNoise'
-            path = path + name
-            model.save(path)
+            pathNew = path + name
+            model.save(pathNew)
         if antiBio or noise:
             for i in range(1, 4):
                 noise_dict = {1: 0, 2: trainNoise, 3: 0}
@@ -681,8 +653,8 @@ def train(config):
                                     validation_data=(validate_images, validate_labels))
             if noise:
                 name = 'noise'
-                path = path + name
-                model.save(path)
+                pathNew = path + name
+                model.save(pathNew)
             if antiBio:
                 weights0 = model.get_weights()
                 model = None
@@ -714,6 +686,5 @@ def train(config):
                                     validation_data=(validate_images, validate_labels), epochs=50,
                                     callbacks=[callback])
                 name = 'antiBio'
-                path = path + name
-                model.save(path)
-
+                pathNew = path + name
+                model.save(pathNew)
